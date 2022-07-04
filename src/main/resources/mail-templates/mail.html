@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th='http://www.thymeleaf.org'>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css' />
+    <style type='text/css'> td, th { border: 1px solid black; padding: 10px; }
+p {
+	font-family: verdana,arial,sans-serif;
+	font-size:11px;
+	color:#333333;
+}
+</style>
+</head>
+<body>
+<div class='container'>
+    <p th:text="#{greetings}"></p>
+    <p>User <b th:text="${jirauser}"></b> has produced <b th:text="${hoursCombined}"></b> hours of worklog entries in the timeframe from <b th:text="${from}"></b> to <b th:text="${to}"></b>.</p>
+    <p>The following <b th:text="${worklogAmount}"></b> worklog entries are present: </p>
+    <table class='table table-striped' align='center' border='0' cellpadding='0' cellspacing='0' width='1300' style='border-collapse: collapse;'>
+        <tbody>
+        <tr bgcolor="#E5E6E9">
+            <td align='center' width="50">
+                <b>Author</b>
+            </td>
+            <td align='center' >
+                <b>Work date</b>
+            </td>
+            <td align='center'>
+                <b>Logged on</b>
+            </td>
+            <td align='center'>
+                <b>Hours worked</b>
+            </td>
+            <td align='center'>
+                <b>Ticket</b>
+            </td>
+            <td align='center'>
+                <b>Ticket summary</b>
+            </td>
+            <td align='center'>
+                <b>Worklog comment</b>
+            </td>
+        </tr>
+        <tr align='center' bgcolor="#F6F6F9"  th:each='value : ${finalList}'>
+            <td align='center'  th:text='${value.author}'></td>
+            <td align='center' th:text='${value.startdate}'></td>
+            <td align='center'th:text='${value.created}'></td>
+            <td align='center' th:text='${value.hoursWorked}'></td>
+            <td align='left' style="white-space:nowrap;">
+                <a th:href="${value.ticketURL}" th:text="${value.ticket}"></a>
+            </td>
+            <td align='left'  th:text='${value.ticketSummary}'></td>
+            <td align='left'  th:text='${value.workComment}'></td>
+        </tr>
+        </tbody>
+    </table>
+    <p>Report generated on: <b th:text="${timestampNow}"></b></p>
+    <p>Best Regards,</p>
+    <p><b>JiraWorklogReporter v1.3 (July, 2022)</b></p>
+
+</div>
+</body>
+</html>
