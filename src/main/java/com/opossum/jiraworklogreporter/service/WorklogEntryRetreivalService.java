@@ -32,7 +32,7 @@ public class WorklogEntryRetreivalService {
     private final EmailServiceImpl emailService;
 
     public WorklogEntryRetreivalService(EmailServiceImpl emailService, WorklogRepository worklogRepository, JiraIsssueRepository jiraIsssueRepository, ProjectRepository projectRepository, ApplicationUserRepository applicationUserRepository,
-                                        @Value("${jwr.inputUsernamesList}") String inputUsernamesList,@Value("${jwr.basejiraurl}") String baseJiraURL){
+                                        @Value("${jwr.inputUsernamesList}") String inputUsernamesList,@Value("${jwr.baseJiraURL}") String baseJiraURL){
         this.inputUsernamesList = Arrays.asList(inputUsernamesList.split(","));
         this.worklogRepository = worklogRepository;
         this.applicationUserRepository = applicationUserRepository;
@@ -85,7 +85,7 @@ public class WorklogEntryRetreivalService {
         }
         } catch (Exception e) {
             log.warn("An error during processing had happened! Sending Technical Email Notification");
-            emailService.sendSimpleMessage("korobeinykov@editel.at","An Error with JWR", "Error happened on the host - " + getHost());
+            emailService.sendTechnicalErrorMessage("An Error with JWR", "Error happened on the host - " + getHost());
             throw new RuntimeException(e);
         }
 

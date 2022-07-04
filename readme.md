@@ -19,7 +19,7 @@ Configuration file with production settings should be stored in `.\config` direc
 All required data (URLs, passwords, etc.) must be added to the configuration before running.
 Following are some extra configurations:
  - `jwr.inputUsernamesList` - comma separated list of jira names for which the report must be retrieved
- - `jwr.basejiraurl` - base URL for the jira instance (used in email links)
+ - `jwr.baseJiraURL` - base URL for the jira instance (used in email links)
  - `jwr.email.to` - comma separated list of Email addresses which will receive the reports
  - `jwr.email.cc` - comma separated list of Email addresses which will be on CC for the reports
  - `jwr.email.technical.to` - Email address which will receive email in the case of an error
