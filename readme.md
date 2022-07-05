@@ -11,11 +11,9 @@ where the parameters stand for date range the query should be executed for.
 Call can be extended via additional parameters to switch between operational profiles:
 `--spring.profiles.active=test`. This can be used in Production to test the infrastructure setup.
 
-Call must happen from the directory, where jar file is situated.
-
 **Configuration**
 
-Configuration file with production settings should be stored in `.\config` directory and have name `.\application.properties`.
+Configuration file with production settings should be provided as spring properties. Active profile `prod` should be used.
 All required data (URLs, passwords, etc.) must be added to the configuration before running.
 Following are some extra configurations:
  - `jwr.inputUsernamesList` - comma separated list of jira names for which the report must be retrieved
@@ -29,6 +27,6 @@ Configuration file location can be changed, but will require an additional param
 
 **Logging**
  
-For application to work properly, a `logback-spring.xml` file must be situated in the same directory as the executable.
+For application to work properly, a `logback-spring.xml` file's location must be changed in the active configuration profile.
 Currently, a time-based log rotation is implemented. 
 
