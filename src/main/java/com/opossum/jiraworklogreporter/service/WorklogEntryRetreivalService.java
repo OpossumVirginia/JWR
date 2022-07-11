@@ -85,7 +85,7 @@ public class WorklogEntryRetreivalService {
         }
         } catch (Exception e) {
             log.warn("An error during processing had happened! Sending Technical Email Notification");
-            emailService.sendTechnicalErrorMessage("An Error with JWR", "Error happened on the host - " + getHost());
+            emailService.sendTechnicalErrorMessage("An Error with JWR", "Error happened on the host - " + getHost()+ "\nError stacktrace: \n" + e.getMessage());
             throw new RuntimeException(e);
         }
 
