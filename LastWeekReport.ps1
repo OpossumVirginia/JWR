@@ -1,7 +1,8 @@
 Write-Host "Congratulations! We start!"
 
 $to = (Get-Date).ToString("yyyy-MM-dd")
-$from = (Get-Date).AddDays(-6).ToString("yyyy-MM-dd")
+#usually should be -6 to represent the whole week, but as reporting is done on monday morging, put 7 to include the monday of a previous week
+$from = (Get-Date).AddDays(-7).ToString("yyyy-MM-dd")
 $l = "$PSScriptRoot\$to"
 
 New-Item -Path $PSScriptRoot -Name "$to" -ItemType "directory"
