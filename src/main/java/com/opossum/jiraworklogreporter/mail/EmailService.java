@@ -5,8 +5,6 @@ import java.util.Map;
 
 import jakarta.mail.MessagingException;
 
-
-
 public interface EmailService {
     void sendSimpleMessage(String to, String subject, String text);
     void sendMessageWithAttachment( String subject, String text, String pathToAttachment);

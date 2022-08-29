@@ -7,7 +7,7 @@ $to=GET-DATE $from.AddMonths(1).AddSeconds(-1)
 $from=$from.ToString("yyyy-MM-dd")
 $to=$to.ToString("yyyy-MM-dd")
 
-$l = "$PSScriptRoot\$to"
+$l = "$PSScriptRoot\reports\monthly\$to"
 
 New-Item -Path $PSScriptRoot -Name "$to" -ItemType "directory"
 New-Item -Path "$l" -Name "config" -ItemType "directory"

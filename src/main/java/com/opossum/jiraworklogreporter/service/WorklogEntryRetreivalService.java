@@ -74,8 +74,10 @@ public class WorklogEntryRetreivalService {
             templateModel.put("from", from);
             templateModel.put("to", to);
 
+            //TODO: add the rounding for working hours
             templateModel.put("worklogAmount", finalList.size());
-            templateModel.put("hoursCombined",finalList.stream().mapToDouble(WorklogReportingDTO::getHoursWorked).sum());
+            double rounded = Math.round(finalList.stream().mapToDouble(WorklogReportingDTO::getHoursWorked).sum() * 100.0) / 100.0 ;
+            templateModel.put("hoursCombined",rounded);
             templateModel.put("finalList",finalList);
 
             Date date = new Date();
