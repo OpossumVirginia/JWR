@@ -1,14 +1,16 @@
 package com.opossum.jiraworklogreporter.mail;
 
 import java.io.File;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
+import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.MailException;
@@ -104,7 +106,7 @@ public class EmailServiceImpl implements EmailService {
 
 
     @Override
-    public void sendMessageUsingThymeleafTemplate(String subject, Map<String, Object> templateModel)
+    public void sendMessageUsingThymeleafTemplate(@NonNull String subject, @NonNull Map<String, Object> templateModel)
             throws MessagingException {
 
         Context thymeleafContext = new Context();
@@ -112,18 +114,47 @@ public class EmailServiceImpl implements EmailService {
 
         String htmlBody = thymeleafTemplateEngine.process("mail.html", thymeleafContext);
 
-        sendHtmlMessage(subject, htmlBody);
+        sendHtmlMessage(subject,emailFrom, emailTo, emailCC, htmlBody);
     }
-    private void sendHtmlMessage(String subject, String htmlBody) throws MessagingException {
+
+    @Override
+    public void sendMessageUsingThymeleafTemplateCustomRecipients(@NonNull String subject, String to, String cc,@NonNull Map<String, Object> templateModel) throws IOException, MessagingException {
+        Context thymeleafContext = new Context();
+        thymeleafContext.setVariables(templateModel);
+
+        String htmlBody = thymeleafTemplateEngine.process("mail.html", thymeleafContext);
+
+        List<String> allto = new ArrayList<String>();
+        Collections.addAll(allto, to.split(","));
+        Collections.addAll(allto, emailTo);
+
+
+        List<String> allcc = new ArrayList<String>();
+        Collections.addAll(allcc, cc.split(","));
+        Collections.addAll(allcc, emailCC);
+
+        String[] simpleArrayTo = new String[ allto.size() ];
+        allto.toArray( simpleArrayTo );
+
+        String[] simpleArrayCC = new String[ allcc.size() ];
+        allcc.toArray( simpleArrayCC );
+
+        sendHtmlMessage(subject,emailFrom, simpleArrayTo, simpleArrayCC, htmlBody);
+    }
+
+    private void sendHtmlMessage(@NonNull String subject, @NonNull String from, String [] to, String [] cc,@NonNull String htmlBody) throws MessagingException {
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-        helper.setFrom(emailFrom);
-        helper.setTo(emailTo);
-        helper.setCc(emailCC);
+        helper.setFrom(from);
+        helper.setTo(cleanAddresses(to));
+        helper.setCc(cleanAddresses(cc));
         helper.setSubject(subject);
         helper.setText(htmlBody, true);
-       // helper.addInline("attachment.png", resourceFile);
         emailSender.send(message);
+    }
+    
+    private String [] cleanAddresses(String [] input){
+        return Arrays.stream(input).filter(x -> !StringUtils.isBlank(x)).toArray(String[]::new);
     }
 
 }

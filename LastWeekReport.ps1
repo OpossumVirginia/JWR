@@ -5,7 +5,7 @@ $to = (Get-Date).ToString("yyyy-MM-dd")
 $from = (Get-Date).AddDays(-7).ToString("yyyy-MM-dd")
 $l = "$PSScriptRoot\reports\weekly\$to"
 
-New-Item -Path $PSScriptRoot -Name "$to" -ItemType "directory"
+#New-Item -Path $PSScriptRoot -Name "$l" -ItemType "directory"
 New-Item -Path "$l" -Name "config" -ItemType "directory"
 Copy-item -Path "$PSScriptRoot\target\jiraworklogreporter-0.0.1-SNAPSHOT.jar" -Destination "$l"
 

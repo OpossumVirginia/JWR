@@ -9,7 +9,7 @@ $to=$to.ToString("yyyy-MM-dd")
 
 $l = "$PSScriptRoot\reports\monthly\$to"
 
-New-Item -Path $PSScriptRoot -Name "$to" -ItemType "directory"
+#New-Item -Path $PSScriptRoot -Name "$to" -ItemType "directory"
 New-Item -Path "$l" -Name "config" -ItemType "directory"
 Copy-item -Path "$PSScriptRoot\target\jiraworklogreporter-0.0.1-SNAPSHOT.jar" -Destination "$l"
 

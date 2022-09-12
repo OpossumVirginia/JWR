@@ -9,7 +9,9 @@ public interface EmailService {
     void sendSimpleMessage(String to, String subject, String text);
     void sendMessageWithAttachment( String subject, String text, String pathToAttachment);
 
-    void sendMessageUsingThymeleafTemplate( String subject, Map<String, Object> templateModel)
+    void sendMessageUsingThymeleafTemplate(String subject, Map<String, Object> templateModel)
+            throws IOException,MessagingException;
+    void sendMessageUsingThymeleafTemplateCustomRecipients(String subject, String to, String cc, Map<String, Object> templateModel)
             throws IOException,MessagingException;
 
     void sendTechnicalErrorMessage(String subject, String text);

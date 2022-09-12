@@ -4,6 +4,7 @@ import com.opossum.jiraworklogreporter.dto.WorklogReportingDTO;
 import com.opossum.jiraworklogreporter.entity.*;
 import com.opossum.jiraworklogreporter.mail.EmailServiceImpl;
 import com.opossum.jiraworklogreporter.repository.ApplicationUserRepository;
+import com.opossum.jiraworklogreporter.repository.ApplicationUserMetadadaRepository;
 import com.opossum.jiraworklogreporter.repository.JiraIsssueRepository;
 import com.opossum.jiraworklogreporter.repository.ProjectRepository;
 import com.opossum.jiraworklogreporter.repository.WorklogRepository;
@@ -27,19 +28,25 @@ public class WorklogEntryRetreivalService {
     private final JiraIsssueRepository jiraIsssueRepository;
     private final ProjectRepository projectRepository;
     private final ApplicationUserRepository applicationUserRepository;
+    private final ApplicationUserMetadadaRepository applicationUserMetadataRepository;
     private final List<String> inputUsernamesList;
     private final String baseJiraURL;
     private final EmailServiceImpl emailService;
+    private final boolean addUserOnCC;
 
-    public WorklogEntryRetreivalService(EmailServiceImpl emailService, WorklogRepository worklogRepository, JiraIsssueRepository jiraIsssueRepository, ProjectRepository projectRepository, ApplicationUserRepository applicationUserRepository,
-                                        @Value("${jwr.inputUsernamesList}") String inputUsernamesList,@Value("${jwr.baseJiraURL}") String baseJiraURL){
+    public WorklogEntryRetreivalService(EmailServiceImpl emailService,
+                                        WorklogRepository worklogRepository, JiraIsssueRepository jiraIsssueRepository, ProjectRepository projectRepository, ApplicationUserRepository applicationUserRepository, ApplicationUserMetadadaRepository applicationUserMetadadaRepository,
+                                        @Value("${jwr.inputUsernamesList}") String inputUsernamesList,@Value("${jwr.baseJiraURL}") String baseJiraURL,
+                                        @Value("${jwr.email.addUserOnCC}") Boolean addUserOnCC){
         this.inputUsernamesList = Arrays.asList(inputUsernamesList.split(","));
         this.worklogRepository = worklogRepository;
         this.applicationUserRepository = applicationUserRepository;
         this.jiraIsssueRepository = jiraIsssueRepository;
         this.projectRepository = projectRepository;
+        this.applicationUserMetadataRepository = applicationUserMetadadaRepository;
         this.emailService = emailService;
         this.baseJiraURL = baseJiraURL;
+        this.addUserOnCC = addUserOnCC;
     }
 
     /**
@@ -74,7 +81,7 @@ public class WorklogEntryRetreivalService {
             templateModel.put("from", from);
             templateModel.put("to", to);
 
-            //TODO: add the rounding for working hours
+
             templateModel.put("worklogAmount", finalList.size());
             double rounded = Math.round(finalList.stream().mapToDouble(WorklogReportingDTO::getHoursWorked).sum() * 100.0) / 100.0 ;
             templateModel.put("hoursCombined",rounded);
@@ -83,7 +90,21 @@ public class WorklogEntryRetreivalService {
             Date date = new Date();
             Timestamp timestampnow = new Timestamp(date.getTime());
             templateModel.put("timestampNow", timestampnow);
-            emailService.sendMessageUsingThymeleafTemplate("Worklog Report for "+u.getUsername(), templateModel);
+
+            if (addUserOnCC == true) {
+                // the users also get the reports for their worklogs
+                List<ApplicationUserMetadata> userData = applicationUserMetadataRepository.findByLowerUserName(inputuser);
+                log.info("Retrieved jira user meta data: " + userData.get(0).toString());
+                String userEmail = userData.get(0).getLowerEmailAddress();
+                log.info("Additional User to get the Email report: " + userEmail);
+
+                emailService.sendMessageUsingThymeleafTemplateCustomRecipients("Worklog Report for "+u.getUsername(),"",userEmail,templateModel);
+            }
+            else {
+                // only default recipients from the configuration file are used
+                emailService.sendMessageUsingThymeleafTemplate("Worklog Report for "+u.getUsername(), templateModel);
+            }
+
         }
         } catch (Exception e) {
             log.warn("An error during processing had happened! Sending Technical Email Notification");
